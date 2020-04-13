@@ -31,7 +31,7 @@ RUN set -x \
   && echo "1" | ./$RPM_NAME --nomd5 --quiet \
   && echo "Docker" > /var/opt/axigen/os.info \
   && if [ "$AXIGEN_PRECONFIGURE" == "yes" ]; then \
-      dnf -y install expect initscripts && \
+      dnf -y install expect initscripts telnet && \
       service axigen start && service axigen stop && \
       yes | cp -fp /var/opt/axigen/run/axigen.cfg /var/opt/axigen/run/axigen.cfg_rpm && \
       yes | cp -f pre_config/pre-configured-axigen.cfg /var/opt/axigen/run/axigen.cfg && \
