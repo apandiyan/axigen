@@ -9,7 +9,7 @@ set -eo pipefail
 # defaults
 axigen_binary="/opt/axigen/bin/axigen"
 AXIGEN_DATA_DIR="/var/opt/axigen"
-update_folder="/app/patching"
+update_folder="/axigen/app/patching"
 mkdir patching; cd patching
 
 # check if curl or wget are installed
