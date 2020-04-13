@@ -1,10 +1,10 @@
 #!/bin/bash
 set -eo pipefail
 
-dep_curl=$(type curl 2>&1)
-retcode_curl=$?
-dep_wget=$(type wget 2>&1)
-retcode_wget=$?
+# dep_curl=$(type curl 2>&1)
+# retcode_curl=$?
+# dep_wget=$(type wget 2>&1)
+# retcode_wget=$?
 
 # defaults
 axigen_binary="/opt/axigen/bin/axigen"
@@ -13,10 +13,10 @@ update_folder="/app/patching"
 mkdir patching; cd patching
 
 # check if curl or wget are installed
-if [ $retcode_curl -gt 0 ] && [ $retcode_wget -gt 0 ]; then
-	echo "Curl and Wget utilities are not installed, please use your OS repository to install any of them (preffered: curl)"
-	exit 1
-fi
+# if [ $retcode_curl -gt 0 ] && [ $retcode_wget -gt 0 ]; then
+# 	echo "Curl and Wget utilities are not installed, please use your OS repository to install any of them (preffered: curl)"
+# 	exit 1
+# fi
 
 current_version=$($axigen_binary --version | awk '{print $4}' | sed 's/[^0-9.]*//g')
 webmail_version=$(sed  's/[^"]*"\([^"]*\)".*/\1/' ${AXIGEN_DATA_DIR}/webmail/default/config.hsp | head -n1)
@@ -24,12 +24,12 @@ webadmin_version=$(sed  's/[^"]*"\([^"]*\)".*/\1/' ${AXIGEN_DATA_DIR}/webadmin/c
 
 # check patch is available for your version
 url="https://www.axigen.com/api/product/updates/latest/?v=$current_version"
-if [ $retcode_curl -eq 0 ]
-then
-  new_version=$(curl -sS "$url" 2>&1)
-else
-  new_version=$(wget -q -O - "$url" 2>&1)
-fi
+# if [ $retcode_curl -eq 0 ]
+# then
+new_version=$(curl -sS "$url" 2>&1)
+# else
+#   new_version=$(wget -q -O - "$url" 2>&1)
+# fi
 
 new_version=$(echo -e "$new_version" | sed 's/[^0-9.]*//g')
 
@@ -72,12 +72,12 @@ elif [ $minor_current -lt $minor_new ]; then
 
 	# download patch from online
 	url="https://update.axigen.com/download/$patch_archive"
-	if [ "$retcode_curl" -eq 0 ]
-	then
-		curl -O -# "$url"
-	else
-		wget --progress=bar "$url"
-	fi
+	# if [ "$retcode_curl" -eq 0 ]
+	# then
+	curl -O -# "$url"
+	# else
+	# 	wget --progress=bar "$url"
+	# fi
 
 	echo -n "Unpack the patch archive"
 	tar xzf "$patch_archive"
@@ -121,4 +121,4 @@ elif [ $minor_current -lt $minor_new ]; then
 	echo ""
 fi
 
-cd /app; rm -rf patching
+cd /axigen/app; rm -rf patching
