@@ -44,7 +44,7 @@ RUN set -x \
       chown axigen.axigen /var/opt/axigen/filters/smtpFilters.script && \
       chmod 600 /var/opt/axigen/filters/smtpFilters.script && \
       unset AXIGEN_PRECONFIGURE_SMTPFILTERS ; fi \
-  && rm -rf $RPM_NAME pre-config \
+  && rm -rf $RPM_NAME pre_config \
   && unset AXIGEN_VERSION \
   && unset RPM_NAME \
   && sh bin/update-patches.sh \
