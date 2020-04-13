@@ -1,0 +1,227 @@
+event onConnect {
+	set (allowedCountries_0, " ");
+	set (bannedCountries_0, "");
+	set (isGeoIPBanned_0, "%isGeoIPBanned%");
+	set (GeoIPResult_0, "%GeoIPResult%");
+	call (WA_Acceptance_basic_banner);
+}
+
+event onEhlo {
+	call (WA_Acceptance_basic);
+	call (WA_Routing_basic_delivery);
+	call (Ironport_Relay);
+}
+
+event onMailFrom {
+}
+
+event onRcptTo {
+}
+
+event onHeadersReceived {
+}
+
+event onBodyChunk {
+}
+
+event onDataReceived {
+}
+
+event onRelay {
+	call (WA_Routing_basic);
+}
+
+event onDeliveryFailure {
+	call (WA_Processing_permanent_ndr);
+}
+
+event onTemporaryDeliveryFailure {
+	call (WA_Processing_temporary_ndr);
+}
+
+event onProcessing {
+}
+
+event onDeliverySuccess {
+	call (WA_Processing_delivered);
+}
+
+method WA_GeoIP {
+	if (
+		anyOf (
+			isCase (isGeoIPBanned_0, "no")
+		)
+	) {
+	}
+}
+
+method WA_Acceptance_basic_banner {
+	set (smtpGreeting, "Welcome to Softcell's CHEP");
+}
+
+method WA_AntiSpam_SPF_Fail {
+	if (
+		anyOf (
+			isCase (SPFResult, "fail")
+		)
+	) {
+		set (smtpAction, "reject");
+		set (smtpExplanation, "SPF check failed for <%ehloHost%> with result <%SPFResult%>: <%SPFExplanation%>");
+	}
+}
+
+method WA_AntiSpam_SPF_Err {
+	if (
+		anyOf (
+			isCase (SPFResult, "temperror"),
+			isCase (SPFResult, "permerror")
+		)
+	) {
+	}
+}
+
+method WA_AntiSpam_SPF_None {
+	if (
+		anyOf (
+			isCase (SPFResult, "none")
+		)
+	) {
+	}
+}
+
+method WA_AntiSpam_SPF_OnEhlo_Fail {
+	if (
+		anyOf (
+			isCase (SPFResult, "fail")
+		)
+	) {
+		set (smtpAction, "reject");
+		set (smtpExplanation, "SPF check failed for <%ehloHost%> with result <%SPFResult%>: <%SPFExplanation%>");
+	}
+}
+
+method WA_AntiSpam_SPF_OnEhlo_Err {
+	if (
+		anyOf (
+			isCase (SPFResult, "temperror"),
+			isCase (SPFResult, "permerror")
+		)
+	) {
+	}
+}
+
+method WA_AntiSpam_SPF_OnEhlo_None {
+	if (
+		anyOf (
+			isCase (SPFResult, "none")
+		)
+	) {
+	}
+}
+
+method WA_Acceptance_basic {
+	set (maxDataSize, "35840");
+	set (maxReceivedHeaders, "30");
+	set (maxRcptCount, "1000");
+	set (waitProcessingTimeout, "10");
+	set (allowStartTLS, "yes");
+	set (allow8bitMime, "yes");
+	set (allowBinaryData, "yes");
+	set (allowPipelining, "yes");
+	set (localDelivery, "auth");
+	set (allowDSN, "no");
+}
+
+method WA_Routing_basic_delivery {
+	set (remoteDelivery, "auth");
+}
+
+method Ironport_Relay {
+	if (
+		anyOf (
+			ipRange (remoteSmtpIP, "10.56.56.0/255.255.255.0")
+		)
+	) {
+		set (localDelivery, "all");
+	}
+}
+
+method WA_DNS_Checks_RDNS {
+	if (
+		anyOf (
+			isCase (ReverseDNSResult, "neutral"),
+			isCase (ReverseDNSResult, "fail")
+		)
+	) {
+		set (smtpAction, "reject");
+		set (smtpExplanation, "Reverse DNS check failed for <%ehloHost%> connected from <%remoteSmtpIp%>");
+	}
+}
+
+method WA_DNS_Checks_MX {
+	if (
+		anyOf (
+			isCase (SenderMXCheckResult, "fail")
+		)
+	) {
+		set (smtpAction, "reject");
+		set (smtpExplanation, "Sender domain <%mailFromDomain%> has no DNS MX entry");
+	}
+}
+
+method WA_Routing_basic {
+	set (remoteSmtpHost, "[172.30.150.10]");
+	set (remoteSmtpPort, "25");
+	set (sslEnabled, "no");
+	set (allowStartTLS, "yes");
+	set (allowedSSLVersions, "tls11 tls12 tls13 ");
+}
+
+method WA_Processing_permanent_ndr {
+	if (
+		allOf (
+			greaterThan (ndrRetryCount, "-1")
+		)
+	) {
+		set (ndrAttachSource, "header");
+		set (ndrSender, "MAILER-DAEMON@chep");
+		set (ndrSubject, "Permanent failure notice");
+		set (ndrMessage, "I am deeply sorry, but I was not able to deliver your mail to the following addresses:
+");
+		set (ndrRcptMessage, "%ndrRcptAddress% : %ndrRcptFailInfo%
+");
+		set (ndrMessageFooter, "This is a permanent delivery failure. The delivery has been tried %ndrRetryCount% times and will not be rescheduled again.");
+		set (sendNdr, "yes");
+	}
+}
+
+method WA_Processing_temporary_ndr {
+	if (
+		allOf (
+			greaterThan (ndrRemainingRetryCount, "-1"),
+			is (ndrRetryCount, "4")
+		)
+	) {
+		set (ndrAttachSource, "header");
+		set (ndrSender, "MAILER-DAEMON@8ab96744e5d6");
+		set (ndrSubject, "Temporary failure notice");
+		set (ndrMessage, "I am deeply sorry, but I was not able to deliver your mail to the following addresses:
+");
+		set (ndrRcptMessage, "%ndrRcptAddress% : %ndrRcptFailInfo%
+");
+		set (ndrMessageFooter, "There will be %ndrRemainingRetryCount% more delivery retries
+Next retry scheduled %ndrRescheduleDate%");
+		set (sendNdr, "no");
+	}
+}
+
+method WA_Processing_delivered {
+	set (dsnSender, "MAILER-DAEMON@8ab96744e5d6");
+	set (dsnSubject, "Successful delivery notice");
+	set (dsnMessage, "I am delighted to report I was able to deliver your mail to the following addresses:
+");
+	set (dsnRcptMessage, "%dsnRcptAddress% : %dsnRcptStatus%
+");
+	set (dsnMessageFooter, "The delivery has been successful.");
+}
+

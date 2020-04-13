@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+log_user 0
+spawn telnet localhost 7000
+set adminpass [lindex $argv 0]
+expect "<login>"
+send "user admin\r"
+expect "<password>"
+send "$adminpass\r"
+expect "<#>"
+send "SET onboardingComplete yes\r"
+expect "<#>"
+send "save config\r"
+expect "<#>"
+send "quit\r"
