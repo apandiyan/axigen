@@ -3,8 +3,8 @@ services:
   axigen:
     image: apandiyan/axigen:10.3.1-pc
     environment:
-      - AXIGEN_PRECONFIGURED="yes"
-      - AXIGEN_ADMIN_PASSWORD="unknownadmin"
+      - AXIGEN_PRECONFIGURED=yes
+      - AXIGEN_ADMIN_PASSWORD=unknownadmin
     ports:
       - 9000:9000
       - 7000:7000
@@ -15,17 +15,7 @@ services:
       - 993:993
     volumes:
       - axigen_data:/var/opt/axigen
-    configs:
-      - source: axigen-license
-        target: /var/opt/axigen/axigen_lk.bin
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-
+      - ./axigen_lk.bin_secure:/var/opt/axigen/axigen_lk.bin:ro
+      
 volumes:
   axigen_data:
-
-secrets:
-  adminpass:
-    file: ./axigen_admin_secure
