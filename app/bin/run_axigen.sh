@@ -58,7 +58,7 @@ then
     /opt/axigen/bin/axigen -A $AXIGEN_ADMIN_PASSWORD
 
     # set onboarding flag to yes
-    service axigen start && expect /app/bin/onboarding_config.expect $AXIGEN_ADMIN_PASSWORD && service axigen stop
+    service axigen start && expect /axigen/app/bin/onboarding_config.expect $AXIGEN_ADMIN_PASSWORD && service axigen stop
   fi
 else
   yes | cp -f /var/opt/axigen/run/axigen.cfg_rpm /var/opt/axigen/run/axigen.cfg
