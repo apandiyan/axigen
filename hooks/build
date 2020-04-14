@@ -1,20 +1,10 @@
 #!/bin/bash
 
-## Build Arguments for pre-configured
-BASE_IMAGE=centos:8.1.1911
-AXIGEN_VERSION=10.3.1
+## Fetch Axigen version to install inside the image
+AXIGEN_VERSION=$(echo $DOCKER_TAG | cut -d "-" -f1)
 
-## Bash variables
-PRE_INSTALLED_TAG=apandiyan/axigen:$AXIGEN_VERSION
-PRE_CONFIGURED_TAG=apandiyan/axigen:$AXIGEN_VERSION-pc
-LATEST_TAG=apandiyan/axigen:latest
-
-
-echo "=> Building pre-installed image with tag of version, latest"
-docker build --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg AXIGEN_VERSION=$AXIGEN_VERSION -t $PRE_INSTALLED_TAG .
-docker tag $PRE_INSTALLED_TAG $LATEST_TAG
-
-echo "=> Building pre-configured image with tag of version with notation"
-sudo docker build -t $PRE_CONFIGURED_TAG --build-arg AXIGEN_VERSION=$AXIGEN_VERSION --build-arg AXIGEN_PRECONFIGURE="yes" --build-arg AXIGEN_PRECONFIGURE_SMTPFILTERS="yes" .
-
-echo "=> Building completed"
+if [ $(echo $DOCKER_TAG | cut -d "-" -f2) == "pc" ]; then
+  docker build -t $IMAGE_NAME --build-arg AXIGEN_VERSION=$(echo $DOCKER_TAG | cut -d "-" -f1) --build-arg AXIGEN_PRECONFIGURE="yes" --build-arg AXIGEN_PRECONFIGURE_SMTPFILTERS="yes" .
+else
+  docker build -t $IMAGE_NAME --build-arg AXIGEN_VERSION=$DOCKER_TAG .
+fi

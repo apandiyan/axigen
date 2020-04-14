@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ $(echo $DOCKER_TAG | cut -d "-" -f2) != "pc" ]; then
+  docker tag $IMAGE_NAME $DOCKER_REPO:latest
+fi
