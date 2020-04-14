@@ -64,7 +64,7 @@ sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -p 9000:9000 -p 7000:70
 For pre-installed and pre-configured image
 
 ```bash
-sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -e AXIGEN_ADMIN_PASSWORD="Soft@run56" -e AXIGEN_PRECONFIGURED="yes" -p 9000:9000 -p 7000:7000 -p 443:443 -p 21:21 -p 465:465 -p 995:995 -p 993:993 apandiyan/axigen:10.3.1-pc
+sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -e AXIGEN_ADMIN_PASSWORD="unknownadmin" -e AXIGEN_PRECONFIGURED="yes" -p 9000:9000 -p 7000:7000 -p 443:443 -p 21:21 -p 465:465 -p 995:995 -p 993:993 apandiyan/axigen:10.3.1-pc
 ```
 
 Apply license while deploying container
