@@ -11,7 +11,8 @@ LATEST_TAG=apandiyan/axigen:latest
 
 
 echo "=> Building pre-installed image with tag of version, latest"
-docker build --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg AXIGEN_VERSION=$AXIGEN_VERSION -t $PRE_INSTALLED_TAG -t $LATEST_TAG .
+docker build --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg AXIGEN_VERSION=$AXIGEN_VERSION -t $PRE_INSTALLED_TAG .
+docker tag $PRE_INSTALLED_TAG $LATEST_TAG
 
 echo "=> Building pre-configured image with tag of version with notation"
 sudo docker build -t $PRE_CONFIGURED_TAG --build-arg AXIGEN_VERSION=$AXIGEN_VERSION --build-arg AXIGEN_PRECONFIGURE="yes" --build-arg AXIGEN_PRECONFIGURE_SMTPFILTERS="yes" .
