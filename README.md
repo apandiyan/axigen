@@ -121,6 +121,9 @@ In here, we are using
 > docker secret : as admin password to set<br>
 
 
+You can use your Axigen mail server by logging in http://<HOST_IP>:9000 with the credentials (username will be admin) provided while deploying containers.
+
+
 ## Building Image
 
 #### Build Arguments
