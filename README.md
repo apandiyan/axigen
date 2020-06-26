@@ -19,11 +19,11 @@ Currently we support two types of image are
 
 #### Pre-installed
 
-This image contains Axigen 10.3.1 with latest patches such as 10.3.1.10. Checkout [Building Image](#building-image) to build image with latest patches available for the version of 10.3.1.
+This image contains Axigen 10.3.1 with latest patches such as 10.3.1.19. Checkout [Building Image](#building-image) to build image with latest patches available for the version of 10.3.1.
 
 #### Pre-installed and Pre-configured
 
-This image contains Axigen 10.3.1 with latest patches such as 10.3.1.10 and initialized with onboarding configurations are
+This image contains Axigen 10.3.1 with latest patches such as 10.3.1.19 and initialized with onboarding configurations are
 
   - Basic Acceptance Routing
   - Admin Password
@@ -58,13 +58,13 @@ Request you to use these environment variables while using pre-configured image.
 For pre-installed image
 
 ```bash
-sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -p 9000:9000 -p 7000:7000 -p 443:443 -p 21:21 -p 465:465 -p 995:995 -p 993:993 apandiyan/axigen:10.3.1
+sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -p 9000:9000 -p 7000:7000 -p 80:80 -p 21:21 -p 25:25 -p 110:110 -p 143:143 apandiyan/axigen:10.3.1
 ```
 
 For pre-installed and pre-configured image
 
 ```bash
-sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -e AXIGEN_ADMIN_PASSWORD="unknownadmin" -e AXIGEN_PRECONFIGURED="yes" -p 9000:9000 -p 7000:7000 -p 443:443 -p 21:21 -p 465:465 -p 995:995 -p 993:993 apandiyan/axigen:10.3.1-pc
+sudo docker run -itd --rm -v axigen_data:/var/opt/axigen -e AXIGEN_ADMIN_PASSWORD="unknownadmin" -e AXIGEN_PRECONFIGURED="yes" -p 9000:9000 -p 7000:7000 -p 80:80 -p 21:21 -p 25:25 -p 110:110 -p 143:143 apandiyan/axigen:10.3.1-pc
 ```
 
 Apply license while deploying container
@@ -93,10 +93,10 @@ services:
       - 9000:9000
       - 7000:7000
       - 21:21
-      - 443:443
-      - 465:465
-      - 995:995
-      - 993:993
+      - 80:80
+      - 25:25
+      - 110:110
+      - 143:143
     volumes:
       - axigen_data:/var/opt/axigen
       - ./axigen_lk.bin_secure:/var/opt/axigen/axigen_lk.bin:ro
@@ -112,7 +112,7 @@ sudo docker config create axigen-license ./axigen_lk.bin_secure
 sudo docker secret create adminpass ./axigen_admin_secure
 sudo docker network create --driver overlay axigen-net
 
-sudo docker service create --name axigen --mount type=volume,source=axigen_data,target=/var/opt/axigen --config source=axigen-license,target=/var/opt/axigen/axigen_lk.bin --secret adminpass -e AXIGEN_ADMIN_PASSWORD_FILE=/run/secrets/adminpass -e AXIGEN_PRECONFIGURED=yes -p 9000:9000 -p 7000:7000 -p 443:443 -p 21:21 -p 465:465 -p 995:995 -p 993:993 --network axigen-net apandiyan/axigen:10.3.1-pc
+sudo docker service create --name axigen --mount type=volume,source=axigen_data,target=/var/opt/axigen --config source=axigen-license,target=/var/opt/axigen/axigen_lk.bin --secret adminpass -e AXIGEN_ADMIN_PASSWORD_FILE=/run/secrets/adminpass -e AXIGEN_PRECONFIGURED=yes -p 9000:9000 -p 7000:7000 -p 80:80 -p 21:21 -p 25:25 -p 110:110 -p 143:143 --network axigen-net apandiyan/axigen:10.3.1-pc
 ```
 
 In here, we are using
@@ -169,7 +169,7 @@ This command will use the image centos:latest reside in your images or else will
 
 There is small difference between update and upgrade are
 
-  > update  : to update version from 10.3.1.1 to 10.3.1.10<br>
+  > update  : to update version from 10.3.1.1 to 10.3.1.19<br>
   > upgrade : to update version from 10.3.1.x to 10.x.x<br>
 
 To update, use any section of [Building Image](#building-image). <br>
