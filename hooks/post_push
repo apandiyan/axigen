@@ -2,4 +2,10 @@
 
 if [ $(echo $DOCKER_TAG | cut -d "-" -f2) != "pc" ]; then
   docker tag $IMAGE_NAME $DOCKER_REPO:latest
+  docker push $DOCKER_REPO:latest
+  docker tag $IMAGE_NAME $DOCKER_REPO:10.3.1.19
+  docker push $DOCKER_REPO:10.3.1.19
+else
+  docker tag $IMAGE_NAME $DOCKER_REPO:10.3.1.19-pc
+  docker push $DOCKER_REPO:10.3.1.19-pc
 fi

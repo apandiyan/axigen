@@ -13,7 +13,7 @@ ARG AXIGEN_PRECONFIGURE_SMTPFILTERS="no"
 
 # respective services are running in these ports
 #EXPOSE 25 465 143 993 110 995 8443 80 9000 9443 7000
-EXPOSE 465 993 995 443 9000 7000 21
+EXPOSE 25 143 110 80 9000 7000 21
 
 # add healthcheck for containers
 HEALTHCHECK --interval=1m --timeout=3s --start-period=3m CMD curl -sfk -o /dev/null http://localhost:9000 || exit 1
