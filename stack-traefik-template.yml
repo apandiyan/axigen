@@ -1,0 +1,107 @@
+version: '3.7'
+
+services:
+  CUSTOMERID-axigen:
+    image: apandiyan/axigen:10.3.1.19-pc
+    hostname: CUSTOMERID-{{.Node.Hostname}}
+    environment:
+      - AXIGEN_PRECONFIGURED=yes
+      - AXIGEN_ADMIN_PASSWORD_FILE=/run/secrets/axigen-adminpass
+    volumes:
+      - /var/opt/LUNNO/CUSTOMERID:/var/opt/axigen
+    configs:
+      - source: axigen-license
+        target: /var/opt/axigen/axigen_lk.bin
+        uid: '220'
+        gid: '220'
+        mode: 0640
+    secrets:
+      - axigen-adminpass
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 2048M
+      placement:
+        constraints:
+          - node.role != manager
+          - node.labels.primaryrole == axigen
+      update_config:
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 60s
+      labels:
+        - "traefik.enable=true"
+        # web entrypoint for webmail
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail.rule=Host(`webmail.DOMAIN`)"
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail.entrypoints=web"
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail.service=CUSTOMERID-axigen-webmail@docker"
+        - "traefik.http.services.CUSTOMERID-axigen-webmail.loadbalancer.server.port=80"
+        # websecure entrypoint for webmail
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail-secure.rule=Host(`webmail.DOMAIN`)"
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail-secure.entrypoints=websecure"
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail-secure.service=CUSTOMERID-axigen-webmail-secure@docker"
+        - "traefik.http.services.CUSTOMERID-axigen-webmail-secure.loadbalancer.server.port=80"
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail-secure.tls=true"
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail-secure.tls.certresolver=le"
+        # web entrypoint for webadmin
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin.rule=Host(`webadmin.DOMAIN`)"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin.entrypoints=web"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin.service=CUSTOMERID-axigen-webadmin@docker"
+        - "traefik.http.services.CUSTOMERID-axigen-webadmin.loadbalancer.server.port=9000"
+        # websecure entrypoint for webadmin
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin-secure.rule=Host(`webadmin.DOMAIN`)"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin-secure.entrypoints=websecure"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin-secure.service=CUSTOMERID-axigen-webadmin-secure@docker"
+        - "traefik.http.services.CUSTOMERID-axigen-webadmin-secure.loadbalancer.server.port=9000"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin-secure.tls=true"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin-secure.tls.certresolver=le"
+        # web to websecure redirection
+        - "traefik.http.routers.CUSTOMERID-axigen-webmail.middlewares=https-redirect"
+        - "traefik.http.routers.CUSTOMERID-axigen-webadmin.middlewares=https-redirect"
+        # smtps entrypoint
+        - "traefik.tcp.routers.CUSTOMERID-axigen-smtps.rule=HostSNI(`smtp.DOMAIN`)"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-smtps.entrypoints=smtps"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-smtps.service=CUSTOMERID-axigen-smtps@docker"
+        - "traefik.tcp.services.CUSTOMERID-axigen-smtps.loadbalancer.server.port=25"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-smtps.tls=true"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-smtps.tls.certresolver=le"
+        # pops entrypoint
+        - "traefik.tcp.routers.CUSTOMERID-axigen-pops.rule=HostSNI(`pop.DOMAIN`)"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-pops.entrypoints=pops"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-pops.service=CUSTOMERID-axigen-pops@docker"
+        - "traefik.tcp.services.CUSTOMERID-axigen-pops.loadbalancer.server.port=110"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-pops.tls=true"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-pops.tls.certresolver=le"
+        # smtps entrypoint
+        - "traefik.tcp.routers.CUSTOMERID-axigen-imaps.rule=HostSNI(`imap.DOMAIN`)"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-imaps.entrypoints=imaps"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-imaps.service=CUSTOMERID-axigen-imaps@docker"
+        - "traefik.tcp.services.CUSTOMERID-axigen-imaps.loadbalancer.server.port=143"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-imaps.tls=true"
+        - "traefik.tcp.routers.CUSTOMERID-axigen-imaps.tls.certresolver=le"
+    networks:
+      - traefik-public
+      - chep-net
+
+volumes:
+  axigen_data:
+
+secrets:
+  axigen-adminpass:
+    external: true
+
+configs:
+  axigen-license:
+    external: true
+
+networks:
+  traefik-public:
+    external: true
+  chep-net:
+    external: true

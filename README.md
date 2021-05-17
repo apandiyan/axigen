@@ -19,11 +19,11 @@ Currently we support two types of image are
 
 #### Pre-installed
 
-This image contains Axigen 10.3.1 with latest patches such as 10.3.1.19. Checkout [Building Image](#building-image) to build image with latest patches available for the version of 10.3.1.
+This image contains Axigen 10.3.1 with latest patches such as 10.3.1.28. Checkout [Building Image](#building-image) to build image with latest patches available for the version of 10.3.1.
 
 #### Pre-installed and Pre-configured
 
-This image contains Axigen 10.3.1 with latest patches such as 10.3.1.19 and initialized with onboarding configurations are
+This image contains Axigen 10.3.1 with latest patches such as 10.3.1.28 and initialized with onboarding configurations are
 
   - Basic Acceptance Routing
   - Admin Password
@@ -169,7 +169,7 @@ This command will use the image centos:latest reside in your images or else will
 
 There is small difference between update and upgrade are
 
-  > update  : to update version from 10.3.1.1 to 10.3.1.19<br>
+  > update  : to update version from 10.3.1.1 to 10.3.1.28<br>
   > upgrade : to update version from 10.3.1.x to 10.x.x<br>
 
 To update, use any section of [Building Image](#building-image). <br>
